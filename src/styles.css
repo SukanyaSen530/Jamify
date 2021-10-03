@@ -1,0 +1,15 @@
+body {
+  background: black;
+  color: white;
+  font-family: "Roboto", sans-serif;
+}
+
+.App {
+  font-family: sans-serif;
+}
+
+.Header {
+  background-color: #343a40;
+  padding: 1.5rem;
+  text-align: center;
+}
