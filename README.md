@@ -1,2 +1,4 @@
+Neog - Level 0
+
 # MusicRecommendationApp
-Created with CodeSandbox
+This app let's you filter songs based on genres. Made with ReactJs.
