@@ -1,4 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faVolumeHigh,
+  faVolumeMute,
+  faPlay,
+  faPause,
+  faBackwardStep,
+  faForwardStep,
+} from "@fortawesome/free-solid-svg-icons";
 import type { Music } from "../../mock/music";
 
 interface AudioPlayerProps {
@@ -10,33 +19,22 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ musicData }) => {
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
   const [volume, setVolume] = useState<number>(1);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
 
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const handlePlay = (): void => {
-    if (audioRef.current) {
-      audioRef.current.play();
-      setIsPlaying(true);
-    }
+    audioRef.current?.play();
+    setIsPlaying(true);
   };
 
   const handlePause = (): void => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    }
+    audioRef.current?.pause();
+    setIsPlaying(false);
   };
 
   const handleToggle = (): void => {
-    if (isPlaying) handlePause();
-    else handlePlay();
-  };
-
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = parseFloat(e.target.value);
-      setCurrentTime(parseFloat(e.target.value));
-    }
+    isPlaying ? handlePause() : handlePlay();
   };
 
   const handleTimeUpdate = (): void => {
@@ -57,94 +55,148 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ musicData }) => {
     if (audioRef.current) {
       audioRef.current.volume = newVolume;
     }
+    setIsMuted(newVolume <= 0);
+  };
+
+  const handleMuteToggle = (): void => {
+    if (audioRef.current) {
+      if (isMuted) {
+        audioRef.current.volume = volume > 0 ? volume : 1;
+        setIsMuted(false);
+      } else {
+        audioRef.current.volume = 0;
+        setIsMuted(true);
+      }
+    }
   };
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setIsPlaying(false);
-      setCurrentTime(0);
-      setDuration(0);
+    if (audioRef.current && musicData?.file) {
+      audioRef.current.src = musicData.file;
+      audioRef.current.load();
+      audioRef.current.volume = volume;
+      audioRef.current.play();
+      setIsPlaying(true);
     }
-  }, [musicData?.id]);
+    setCurrentTime(0);
+    setDuration(0);
+  }, [musicData]);
 
   useEffect(() => {
     const audio = audioRef.current;
-
     if (audio) {
-      audio.volume = volume;
-
       audio.addEventListener("timeupdate", handleTimeUpdate);
       audio.addEventListener("loadedmetadata", handleLoadedMetadata);
-
-      return () => {
-        audio.removeEventListener("timeupdate", handleTimeUpdate);
-        audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
-      };
     }
-  }, [musicData?.file, volume]);
+    return () => {
+      audio?.removeEventListener("timeupdate", handleTimeUpdate);
+      audio?.removeEventListener("loadedmetadata", handleLoadedMetadata);
+    };
+  }, []);
 
   return (
-    <div className="fixed bottom-0 left-0 flex p-2 justify-between items-center w-full bg-amber-200">
-      <audio ref={audioRef} src={musicData?.file ?? ""} preload="metadata" />
+    <div
+      className="fixed bottom-0 left-0 w-full bg-gray text-gray-800 z-50 shadow-neumorphic pt-2"
+      role="region"
+      aria-label="Audio player"
+    >
+      <audio ref={audioRef} preload="metadata" />
 
-      <div className="flex gap-2">
-        <img src={musicData?.imgUrl} className="h-12 w-12 rounded-sm" alt="" />
-        <div className="">
-          <p>{musicData?.name}</p>
-          <p>{musicData?.singers}</p>
+      <input
+        type="range"
+        min="0"
+        max={duration || 0}
+        value={currentTime}
+        onChange={(e) => {
+          const time = parseFloat(e.target.value);
+          if (audioRef.current) {
+            audioRef.current.currentTime = time;
+          }
+          setCurrentTime(time);
+        }}
+        aria-label="Playback progress"
+        className="w-full appearance-none h-1 bg-slate-300 rounded-full 
+          [&::-webkit-slider-thumb]:appearance-none 
+          [&::-webkit-slider-thumb]:bg-accent 
+          [&::-webkit-slider-thumb]:rounded-full 
+          [&::-webkit-slider-thumb]:h-3 
+          [&::-webkit-slider-thumb]:w-3 
+          [&::-webkit-slider-thumb]:cursor-pointer 
+          transition-all hover:bg-slate-400 mb-2"
+        style={{ top: "-2px", position: "absolute", width: "100%" }}
+      />
+
+      <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 gap-3 sm:gap-0">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          {musicData?.imgUrl && (
+            <img
+              src={musicData.imgUrl}
+              alt={`Album cover for ${musicData.name}`}
+              className="h-12 w-12 rounded-neumorphic shadow-neumorphic object-cover"
+            />
+          )}
+          <div>
+            <p className="font-semibold text-sm sm:text-base">
+              {musicData?.name || "No song selected"}
+            </p>
+            <p className="text-gray-500 text-xs">{musicData?.singers || ""}</p>
+          </div>
         </div>
-      </div>
 
-      <div className="flex items-center gap-2">
-        <input
-          type="range"
-          min="0"
-          max={duration || 0}
-          value={currentTime}
-          onChange={handleSeek}
-          className="flex-1"
-        />
-        <div className="flex justify-between text-sm min-w-[80px]">
-          <span>
-            {Math.floor(currentTime / 60)}:
-            {Math.floor(currentTime % 60)
-              .toString()
-              .padStart(2, "0")}
-          </span>
-          <span>/</span>
-          <span>
-            {Math.floor(duration / 60)}:
-            {Math.floor(duration % 60)
-              .toString()
-              .padStart(2, "0")}
-          </span>
+        <div className="flex items-center gap-3 sm:gap-4">
+          <button
+            title="Previous"
+            aria-label="Previous track"
+            className="bg-gray rounded-full shadow-neumorphic-deep flex items-center justify-center h-[40px] w-[40px] transition-all active:shadow-neumorphic-inset focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+          >
+            <FontAwesomeIcon icon={faBackwardStep} />
+          </button>
+
+          <button
+            onClick={handleToggle}
+            disabled={!musicData?.file}
+            title={isPlaying ? "Pause" : "Play"}
+            aria-label={isPlaying ? "Pause playback" : "Play playback"}
+            className="bg-gray text-accent rounded-full shadow-neumorphic-deep flex items-center justify-center h-[50px] w-[50px] transition-all active:shadow-neumorphic-inset focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+          >
+            <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
+          </button>
+
+          <button
+            title="Next"
+            aria-label="Next track"
+            className="bg-gray rounded-full shadow-neumorphic-deep flex items-center justify-center h-[40px] w-[40px] transition-all active:shadow-neumorphic-inset focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+          >
+            <FontAwesomeIcon icon={faForwardStep} />
+          </button>
         </div>
-      </div>
 
-      <div className="flex items-center gap-2">
-        <button
-          onClick={handleToggle}
-          className="px-3 py-1 bg-amber-300 rounded hover:bg-amber-400"
-        >
-          {isPlaying ? "Pause" : "Play"}
-        </button>
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
+          <button
+            onClick={handleMuteToggle}
+            aria-label={isMuted ? "Unmute" : "Mute"}
+            className="text-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+          >
+            <FontAwesomeIcon icon={isMuted ? faVolumeMute : faVolumeHigh} />
+          </button>
 
-        <div className="flex items-center gap-1">
-          <span className="text-sm">🔊</span>
           <input
             type="range"
             min="0"
             max="1"
-            step="0.1"
-            value={volume}
+            step="0.05"
+            value={isMuted ? 0 : volume}
             onChange={handleVolumeChange}
-            className="w-20"
+            aria-label="Volume"
+            className="w-24 appearance-none h-1 bg-slate-300 rounded-full 
+              [&::-webkit-slider-thumb]:appearance-none
+              [&::-webkit-slider-thumb]:bg-accent 
+              [&::-webkit-slider-thumb]:rounded-full 
+              [&::-webkit-slider-thumb]:h-3 
+              [&::-webkit-slider-thumb]:w-3 
+              [&::-webkit-slider-thumb]:cursor-pointer 
+              transition-all hover:bg-slate-400"
           />
-          <span className="text-sm min-w-[30px]">
-            {Math.round(volume * 100)}%
-          </span>
         </div>
       </div>
     </div>

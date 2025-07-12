@@ -1,1 +1,106 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap");
+
 @import "tailwindcss";
+@layer theme, base, components, utilities;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-bg-base: #dde4ea;
+    --color-bg-surface: #dde4ea;
+    --color-shadow-dark: #a3b1c6;
+    --color-shadow-light: #f5f9fc;
+    --color-accent: #005fcc;
+    --color-accent-light: #b3d1f2;
+    --color-text-primary: #1c1c1e;
+    --color-text-secondary: #4a4a4a;
+  }
+
+  body {
+    font-family: "Montserrat", "Palanquin", sans-serif;
+    background-color: var(--color-bg-base);
+    color: var(--color-text-primary);
+  }
+}
+
+@layer utilities {
+  /* Backgrounds */
+  .bg-gray {
+    background-color: var(--color-bg-base);
+  }
+  .bg-accent {
+    background-color: var(--color-accent);
+  }
+  .bg-accent-200 {
+    background-color: var(--color-accent-light);
+  }
+
+  /* Text colors */
+  .text-accent {
+    color: var(--color-accent);
+  }
+  .text-primary {
+    color: var(--color-text-primary);
+  }
+
+  /* Border radius */
+  .rounded-neumorphic {
+    border-radius: 1rem;
+  }
+
+  /* Neumorphic Shadows */
+  .shadow-neumorphic-light {
+    box-shadow: 6px 6px 12px var(--color-shadow-dark),
+      -6px -6px 12px var(--color-shadow-light);
+  }
+  .shadow-neumorphic {
+    box-shadow: 10px 10px 30px var(--color-shadow-dark),
+      -10px -10px 30px var(--color-shadow-light);
+  }
+  .shadow-neumorphic-deep {
+    box-shadow: 15px 15px 40px #91a1b6,
+      -15px -15px 40px var(--color-shadow-light);
+  }
+
+  .shadow-neumorphic-inset-soft {
+    box-shadow: inset 5px 5px 15px var(--color-shadow-dark),
+      inset -5px -5px 15px var(--color-shadow-light);
+  }
+
+  .shadow-neumorphic-inset {
+    box-shadow: inset 10px 10px 30px var(--color-shadow-dark),
+      inset -10px -10px 30px var(--color-shadow-light);
+  }
+
+  .shadow-neumorphic-inset-deep {
+    box-shadow: inset 15px 15px 40px #91a1b6,
+      inset -15px -15px 40px var(--color-shadow-light);
+  }
+}
+
+/* Volume slider */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+input[type="range"]::-moz-range-thumb {
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  cursor: pointer;
+}
+
+input[type="range"] {
+  accent-color: var(--color-accent);
+  background-color: var(--color-shadow-dark);
+  height: 4px;
+  border-radius: 9999px;
+}

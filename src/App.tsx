@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import data, { type Music } from "./mock/music.ts";
 import AudioPlayer from "./components/AudioPlayer/index.tsx";
+import Carousel from "./components/Carousel/index.tsx";
+import Card from "./components/Card/index.tsx";
 
 function App() {
   const [activeGenre, setActiveGenre] = useState("All");
@@ -17,26 +19,35 @@ function App() {
   }, [activeGenre]);
 
   return (
-    <main className="p-6">
-      <h1>Jamify</h1>
+    <main className="bg-gray min-h-screen p-4 md:p-10 pb-50 md:pb-30 flex flex-col gap-8">
+      <h1 className="text-5xl text-center text-accent font-bold">
+        {" "}
+        Jamify 🎧{" "}
+      </h1>
 
-      <div className="flex gap-2">
-        {genres?.map((genre) => (
-          <button
-            key={genre}
-            onClick={() => handleGenreOnClick(genre)}
-            className="bg-amber-300 px-2 min-w-[100px] rounded-md cursor-pointer"
-          >
-            {genre}
-          </button>
-        ))}
+      <div>
+        <h2 className="text-xl pb-2"> Genre </h2>
+        <Carousel
+          data={genres}
+          onItemClick={handleGenreOnClick}
+          activeItem={activeGenre}
+        />
       </div>
 
-      {filteredData.map((music) => (
-        <div key={music.id} onClick={() => setSelectedSong(music)}>
-          {music.name}
-        </div>
-      ))}
+      <div>
+        <h2 className="text-xl pb-2">
+          {activeGenre === "All" ? "Top" : activeGenre} songs
+        </h2>
+        {filteredData.map((music, index) => (
+          <Card
+            onClick={() => setSelectedSong(music)}
+            key={music.id}
+            index={index + 1}
+            musicData={music}
+            selectedSongId={selectedSong?.id}
+          />
+        ))}
+      </div>
 
       {selectedSong ? <AudioPlayer musicData={selectedSong} /> : null}
     </main>
