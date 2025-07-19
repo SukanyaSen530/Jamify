@@ -1,0 +1,23 @@
+.audio-player {
+  background: var(--neu-light);
+}
+
+.inner {
+  padding: 1.5rem 1rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inner-2 {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex: 0.2;
+}
+
+.play-section {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}

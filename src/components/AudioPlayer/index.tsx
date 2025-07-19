@@ -10,11 +10,27 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import type { Music } from "../../mock/music";
 
+import HighVolume from "../../assets/HighVolume";
+import NoVolume from "../../assets/NoVolume";
+import LowVolume from "../../assets/LowVolume";
+import Play from "../../assets/Play";
+import Pause from "../../assets/Pause";
+import Next from "../../assets/Next";
+import Previous from "../../assets/Previous";
+
+import "./audio-player.css";
+
 interface AudioPlayerProps {
   musicData?: Music | null;
+  handleNext: () => void;
+  handlePrev: () => void;
 }
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ({ musicData }) => {
+const AudioPlayer: React.FC<AudioPlayerProps> = ({
+  musicData,
+  handleNext,
+  handlePrev,
+}) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
@@ -95,13 +111,8 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ musicData }) => {
   }, []);
 
   return (
-    <div
-      className="fixed bottom-0 left-0 w-full bg-gray text-gray-800 z-50 shadow-neumorphic pt-2"
-      role="region"
-      aria-label="Audio player"
-    >
+    <div className="audio-player" role="region" aria-label="Audio player">
       <audio ref={audioRef} preload="metadata" />
-
       <input
         type="range"
         min="0"
@@ -115,41 +126,33 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ musicData }) => {
           setCurrentTime(time);
         }}
         aria-label="Playback progress"
-        className="w-full appearance-none h-1 bg-slate-300 rounded-full 
-          [&::-webkit-slider-thumb]:appearance-none 
-          [&::-webkit-slider-thumb]:bg-accent 
-          [&::-webkit-slider-thumb]:rounded-full 
-          [&::-webkit-slider-thumb]:h-3 
-          [&::-webkit-slider-thumb]:w-3 
-          [&::-webkit-slider-thumb]:cursor-pointer 
-          transition-all hover:bg-slate-400 mb-2"
+        className="neumorphic-range"
         style={{ top: "-2px", position: "absolute", width: "100%" }}
       />
 
-      <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 gap-3 sm:gap-0">
-        <div className="flex items-center gap-3 w-full sm:w-auto">
+      <div className="inner">
+        <div className="inner-2">
           {musicData?.imgUrl && (
             <img
               src={musicData.imgUrl}
               alt={`Album cover for ${musicData.name}`}
-              className="h-12 w-12 rounded-neumorphic shadow-neumorphic object-cover"
+              className="h-15 w-15 object-cover rounded-lg"
             />
           )}
           <div>
-            <p className="font-semibold text-sm sm:text-base">
-              {musicData?.name || "No song selected"}
-            </p>
-            <p className="text-gray-500 text-xs">{musicData?.singers || ""}</p>
+            <p className="text-md">{musicData?.name || "No song selected"}</p>
+            <p className="text-sm">{musicData?.singers || ""}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-6">
           <button
+            onClick={handlePrev}
             title="Previous"
             aria-label="Previous track"
-            className="bg-gray rounded-full shadow-neumorphic-deep flex items-center justify-center h-[40px] w-[40px] transition-all active:shadow-neumorphic-inset focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+            className="neumorphic-btn--circle "
           >
-            <FontAwesomeIcon icon={faBackwardStep} />
+            <Previous size="18px" />
           </button>
 
           <button
@@ -157,29 +160,28 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ musicData }) => {
             disabled={!musicData?.file}
             title={isPlaying ? "Pause" : "Play"}
             aria-label={isPlaying ? "Pause playback" : "Play playback"}
-            className="bg-gray text-accent rounded-full shadow-neumorphic-deep flex items-center justify-center h-[50px] w-[50px] transition-all active:shadow-neumorphic-inset focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+            className="neumorphic-btn--circle h-15 w-15"
           >
-            <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
+            {isPlaying ? <Pause size="24px" /> : <Play size="24px" />}
           </button>
 
           <button
+            onClick={handleNext}
             title="Next"
             aria-label="Next track"
-            className="bg-gray rounded-full shadow-neumorphic-deep flex items-center justify-center h-[40px] w-[40px] transition-all active:shadow-neumorphic-inset focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+            className="neumorphic-btn--circle"
           >
-            <FontAwesomeIcon icon={faForwardStep} />
+            <Next size="18px" />
           </button>
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
+        <div className="flex justify-center items-center gap-4">
           <button
             onClick={handleMuteToggle}
             aria-label={isMuted ? "Unmute" : "Mute"}
-            className="text-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent"
           >
-            <FontAwesomeIcon icon={isMuted ? faVolumeMute : faVolumeHigh} />
+            {isMuted ? <NoVolume size="24px" /> : <HighVolume size="24px" />}
           </button>
-
           <input
             type="range"
             min="0"
@@ -188,14 +190,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ musicData }) => {
             value={isMuted ? 0 : volume}
             onChange={handleVolumeChange}
             aria-label="Volume"
-            className="w-24 appearance-none h-1 bg-slate-300 rounded-full 
-              [&::-webkit-slider-thumb]:appearance-none
-              [&::-webkit-slider-thumb]:bg-accent 
-              [&::-webkit-slider-thumb]:rounded-full 
-              [&::-webkit-slider-thumb]:h-3 
-              [&::-webkit-slider-thumb]:w-3 
-              [&::-webkit-slider-thumb]:cursor-pointer 
-              transition-all hover:bg-slate-400"
+            className="neumorphic-range"
           />
         </div>
       </div>

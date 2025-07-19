@@ -95,17 +95,6 @@ const data: Music[] = [
     file: "/music/tum-hi-ho.mp3",
     time: "4:21",
   },
-  {
-    id: "Q15",
-    name: "Teri Hogaiyaan",
-    album: "Broken But Beautiful",
-    singers: "Vishal Mishra",
-    genre: "Emotional Ballads",
-    year: 2019,
-    time: "3:20",
-    imgUrl:
-      "https://c-cl.cdn.smule.com/rs-s-sf-1/arr/9f/38/0700dc87-faea-4af0-828a-e373215f8ecf_1024.jpg",
-  },
 ];
 
 export interface Music {
