@@ -7,7 +7,7 @@ const data: Music[] = [
     genre: "Indian Film Pop",
     year: 2021,
     imgUrl:
-      "http://a10.gaanacdn.com/images/albums/78/4419378/crop_480x480_4419378.jpg",
+      "https://a10.gaanacdn.com/images/albums/78/4419378/crop_480x480_4419378.jpg",
     file: "/music/param-sundari.mp3",
     time: "3:20",
   },
@@ -19,7 +19,7 @@ const data: Music[] = [
     genre: "Romantic",
     year: 2019,
     imgUrl:
-      "http://a10.gaanacdn.com/images/song/2/28407802/crop_480x480_1571209833.jpg",
+      "https://a10.gaanacdn.com/images/song/2/28407802/crop_480x480_1571209833.jpg",
     file: "/music/valam.mp3",
     time: "2:43",
   },
@@ -43,7 +43,7 @@ const data: Music[] = [
     genre: "Indian Film Pop",
     year: 2020,
     imgUrl:
-      "http://a10.gaanacdn.com/images/song/96/29147296/crop_480x480_1576899539.jpg",
+      "https://a10.gaanacdn.com/images/song/96/29147296/crop_480x480_1576899539.jpg",
     file: "/music/muqabla.mp3",
     time: "2:56",
   },
@@ -91,7 +91,7 @@ const data: Music[] = [
     genre: "Emotional Ballads",
     year: 2013,
     imgUrl:
-      "http://a10.gaanacdn.com/images/albums/17/92317/crop_480x480_92317.jpg",
+      "https://a10.gaanacdn.com/images/albums/17/92317/crop_480x480_92317.jpg",
     file: "/music/tum-hi-ho.mp3",
     time: "4:21",
   },

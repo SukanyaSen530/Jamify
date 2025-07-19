@@ -32,9 +32,12 @@ const Card: React.FC<CardProps> = ({
         <p className="text-xs shrink-0">#{index}</p>
 
         <img
-          className="h-16 w-16 rounded-lg object-cover neu-shadow-subtle"
+          className="rounded-lg object-cover neu-shadow-subtle"
           src={musicData?.imgUrl}
           alt={`Cover for ${musicData?.name}`}
+          loading="lazy"
+          height="64px"
+          width="64px"
         />
 
         <div className="flex flex-col overflow-hidden">

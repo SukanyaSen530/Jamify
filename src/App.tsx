@@ -36,20 +36,22 @@ const App = () => {
   return (
     <main>
       <section className="relative px-[2%] sm:px-[5%] md:px-[10%] lg:px-[15%] py-[3%] min-h-[100vh]">
-        <h1 className="sm:text-5xl md:text-7xl font-semibold tracking-[5px] text-center color-light mb-10">
-          {" "}
-          JamiFy 🎧{" "}
-        </h1>
+        <header>
+          <h1 className="sm:text-5xl md:text-7xl font-semibold tracking-[5px] text-center color-light mb-10">
+            {" "}
+            JamiFy 🎧{" "}
+          </h1>
+        </header>
 
-        <div className="my-4">
+        <nav className="my-4">
           <Carousel
             data={genres}
             onItemClick={handleGenreOnClick}
             activeItem={activeGenre}
           />
-        </div>
+        </nav>
 
-        <div className="py-2">
+        <section className="py-2">
           <h2 className="text-[1.5rem]">
             {activeGenre === "All" ? "Top" : activeGenre} songs
           </h2>
@@ -65,10 +67,10 @@ const App = () => {
               />
             ))}
           </div>
-        </div>
+        </section>
       </section>
 
-      <section className="sticky bottom-0 left-0 right-0">
+      <footer className="sticky bottom-0 left-0 right-0">
         {selectedSongIndex !== -1 ? (
           <AudioPlayer
             musicData={filteredData[selectedSongIndex]}
@@ -76,7 +78,7 @@ const App = () => {
             handlePrev={handlePrev}
           />
         ) : null}
-      </section>
+      </footer>
     </main>
   );
 };

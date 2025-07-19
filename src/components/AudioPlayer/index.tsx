@@ -1,13 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faVolumeHigh,
-  faVolumeMute,
-  faPlay,
-  faPause,
-  faBackwardStep,
-  faForwardStep,
-} from "@fortawesome/free-solid-svg-icons";
 import type { Music } from "../../mock/music";
 
 import HighVolume from "../../assets/HighVolume";
@@ -17,8 +8,6 @@ import Play from "../../assets/Play";
 import Pause from "../../assets/Pause";
 import Next from "../../assets/Next";
 import Previous from "../../assets/Previous";
-
-import "./audio-player.css";
 
 interface AudioPlayerProps {
   musicData?: Music | null;
@@ -111,7 +100,11 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   }, []);
 
   return (
-    <div className="audio-player" role="region" aria-label="Audio player">
+    <div
+      className="bg-[var(--neu-light)]"
+      role="region"
+      aria-label="Audio player"
+    >
       <audio ref={audioRef} preload="metadata" />
       <input
         type="range"
@@ -130,13 +123,16 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
         style={{ top: "-2px", position: "absolute", width: "100%" }}
       />
 
-      <div className="inner">
-        <div className="inner-2">
+      <div className="flex items-center justify-between pt-6 pr-4 pb-4 pl-4">
+        <div className="flex gap-4 items-center [flex:0.2]">
           {musicData?.imgUrl && (
             <img
               src={musicData.imgUrl}
               alt={`Album cover for ${musicData.name}`}
-              className="h-15 w-15 object-cover rounded-lg"
+              className="object-cover rounded-lg"
+              loading="lazy"
+              height={"56px"}
+              width={"56px"}
             />
           )}
           <div>
@@ -180,7 +176,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
             onClick={handleMuteToggle}
             aria-label={isMuted ? "Unmute" : "Mute"}
           >
-            {isMuted ? <NoVolume size="24px" /> : <HighVolume size="24px" />}
+            {isMuted ? (
+              <NoVolume size="24px" />
+            ) : volume <= 0.5 ? (
+              <LowVolume size="24px" />
+            ) : (
+              <HighVolume size="24px" />
+            )}
           </button>
           <input
             type="range"
