@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import ChevronLeft from "../../assets/ChevronLeft";
 import ChevronRight from "../../assets/ChevronRight";
@@ -9,6 +9,16 @@ interface CarouselProps {
   activeItem?: string;
 }
 
+type Callback = (...args: any[]) => void;
+
+export const debounce = (cb: Callback, delay = 300): Callback => {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  return (...args: any[]) => {
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => cb(...args), delay);
+  };
+};
+
 const Carousel: React.FC<CarouselProps> = ({
   data,
   onItemClick,
@@ -16,33 +26,35 @@ const Carousel: React.FC<CarouselProps> = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemDisplay, setItemDisplay] = useState(1);
-  const itemWidth = 100 / itemDisplay;
+  const [itemWidthPercent, setItemWidthPercent] = useState(100);
 
-  const getOffsetPercent = () => {
-    const remToPx = 16;
-    const itemMarginPx = 1 * remToPx;
-    const marginPercent = (itemMarginPx / window.innerWidth) * 100;
-    return itemWidth + marginPercent;
-  };
+  const calculateItemWidth = useCallback(() => {
+    let display = 1;
+    if (window.innerWidth > 1024) display = 4;
+    else if (window.innerWidth > 900) display = 3;
+    else if (window.innerWidth > 600) display = 2;
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 990) {
-        setItemDisplay(4);
-      } else if (window.innerWidth > 700) {
-        setItemDisplay(3);
-      } else {
-        setItemDisplay(1);
-      }
-    };
-    handleResize();
+    const gapPx = 16;
+    const totalGap = gapPx * (display - 1);
+    const widthPerItem = (window.innerWidth - totalGap) / display;
+    const widthPercent = (widthPerItem / window.innerWidth) * 100;
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    setItemDisplay(display);
+    setItemWidthPercent(widthPercent);
   }, []);
 
+  useEffect(() => {
+    const debounced = debounce(calculateItemWidth, 150);
+    window.addEventListener("resize", debounced);
+    calculateItemWidth();
+    return () => window.removeEventListener("resize", debounced);
+  }, [calculateItemWidth]);
+
+  const maxIndex = Math.max(0, data.length - itemDisplay);
+  const clampedIndex = Math.min(currentIndex, maxIndex);
+
   const handleNext = () => {
-    if (currentIndex < data.length - itemDisplay) {
+    if (currentIndex < data.length - itemDisplay + 1) {
       setCurrentIndex((prev) => prev + 1);
     }
   };
@@ -54,19 +66,21 @@ const Carousel: React.FC<CarouselProps> = ({
   };
 
   return (
-    <div className="w-full relative">
+    <div className="w-full relative" aria-label="Genre carousel">
       <div className="overflow-hidden w-full py-2">
         <div
-          className="flex gap-4 pl-2 pr-14 transition-transform duration-700 ease-[cubic-bezier(0.77,0,0.175,1)]"
+          className="flex gap-4 transition-transform duration-700 ease-[cubic-bezier(0.77,0,0.175,1)]"
           style={{
-            transform: `translateX(-${currentIndex * getOffsetPercent()}%)`,
+            transform: `translateX(-${
+              clampedIndex * (itemWidthPercent + (16 / window.innerWidth) * 100)
+            }%)`,
           }}
         >
           {data?.map((item, idx) => (
             <div
-              key={idx}
+              key={`item-${item}-${idx}`}
               className="flex-none p-3 chip"
-              style={{ flexBasis: `${itemWidth}%` }}
+              style={{ flexBasis: `${itemWidthPercent}%` }}
               onClick={() => onItemClick(item)}
             >
               <div
@@ -78,24 +92,29 @@ const Carousel: React.FC<CarouselProps> = ({
               </div>
             </div>
           ))}
+          <div
+            aria-hidden
+            className="flex-none p-3"
+            style={{ flexBasis: `${itemWidthPercent}%` }}
+          />
         </div>
       </div>
 
-      <div className="absolute top-1/2 left-[-3.5rem] transform -translate-y-1/2 z-10">
+      <div className="bg-[#1f1f1f] hover:bg-[#333333] h-[45px] flex items-center absolute top-1/2 left-[-1.5] rounded-tl-sm rounded-bl-sm transform -translate-y-1/2 z-10">
         <button
           onClick={handlePrev}
           disabled={currentIndex <= 0}
-          className="neumorphic-btn--circle disabled:opacity-40 disabled:cursor-not-allowed"
+          className="p-2 text-white transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <ChevronLeft size="18px" />
         </button>
       </div>
 
-      <div className="absolute top-1/2 right-[-3.5rem] transform -translate-y-1/2 z-10">
+      <div className="bg-[#1f1f1f] hover:bg-[#333333] h-[45px] flex items-center absolute top-1/2 right-1 rounded-tr-sm rounded-br-sm transform -translate-y-1/2 z-10">
         <button
           onClick={handleNext}
           disabled={currentIndex >= data.length - itemDisplay}
-          className="neumorphic-btn--circle disabled:opacity-40 disabled:cursor-not-allowed"
+          className="p-2 text-white transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <ChevronRight size="18px" />
         </button>

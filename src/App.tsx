@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, lazy, Suspense } from "react";
 import data from "./mock/music.ts";
-import AudioPlayer from "./components/AudioPlayer/index.tsx";
-import Carousel from "./components/Carousel/index.tsx";
+
 import Card from "./components/Card/index.tsx";
+const Carousel = lazy(() => import("./components/Carousel/index.tsx"));
+const AudioPlayer = lazy(() => import("./components/AudioPlayer/index.tsx"));
 
 const App = () => {
   const [activeGenre, setActiveGenre] = useState("All");
@@ -35,20 +36,23 @@ const App = () => {
 
   return (
     <main>
-      <section className="relative px-[2%] sm:px-[5%] md:px-[10%] lg:px-[15%] py-[3%] min-h-[100vh]">
+      <section className="relative px-[3%] sm:px-[5%] md:px-[10%] lg:px-[15%] py-[10%] sm:py-[5%] md:py-[7%] min-h-[100vh]">
         <header>
-          <h1 className="sm:text-5xl md:text-7xl font-semibold tracking-[5px] text-center color-light mb-10">
-            {" "}
-            JamiFy 🎧{" "}
+          <h1 className="text-5xl md:text-7xl font-semibold tracking-[5px] text-center color-light mb-6">
+            JamiFy 🎧
           </h1>
         </header>
 
         <nav className="my-4">
-          <Carousel
-            data={genres}
-            onItemClick={handleGenreOnClick}
-            activeItem={activeGenre}
-          />
+          <Suspense
+            fallback={<div className="skeleton h-[3rem] w-full py-4" />}
+          >
+            <Carousel
+              data={genres}
+              onItemClick={handleGenreOnClick}
+              activeItem={activeGenre}
+            />
+          </Suspense>
         </nav>
 
         <section className="py-2">
@@ -71,13 +75,23 @@ const App = () => {
       </section>
 
       <footer className="sticky bottom-0 left-0 right-0">
-        {selectedSongIndex !== -1 ? (
-          <AudioPlayer
-            musicData={filteredData[selectedSongIndex]}
-            handleNext={handleNext}
-            handlePrev={handlePrev}
-          />
-        ) : null}
+        <Suspense
+          fallback={
+            <div className="h-[84px] bg-[var(--neu-light)] w-full p-4 flex justify-between">
+              <p className="h-[54px] w-[150px] skeleton" />
+              <p className="h-[54px] w-[150px] skeleton" />
+              <p className="h-[54px] w-[150px] skeleton" />
+            </div>
+          }
+        >
+          {selectedSongIndex !== -1 ? (
+            <AudioPlayer
+              musicData={filteredData[selectedSongIndex]}
+              handleNext={handleNext}
+              handlePrev={handlePrev}
+            />
+          ) : null}
+        </Suspense>
       </footer>
     </main>
   );

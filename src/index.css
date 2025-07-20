@@ -30,6 +30,10 @@ body {
 }
 
 @layer components {
+  .skeleton {
+    @apply animate-pulse bg-gray-600 rounded-sm;
+  }
+
   .active {
     @apply shadow-[inset_2px_2px_4px_var(--neu-dark),inset_-2px_-2px_4px_var(--neu-light)];
   }

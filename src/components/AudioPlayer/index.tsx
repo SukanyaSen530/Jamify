@@ -106,6 +106,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
       aria-label="Audio player"
     >
       <audio ref={audioRef} preload="metadata" />
+
       <input
         type="range"
         min="0"
@@ -123,77 +124,81 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
         style={{ top: "-2px", position: "absolute", width: "100%" }}
       />
 
-      <div className="flex items-center justify-between pt-6 pr-4 pb-4 pl-4">
-        <div className="flex gap-4 items-center [flex:0.2]">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between p-4 pt-6">
+        <div className="flex items-center gap-4 w-full md:w-[40%] flex-1">
           {musicData?.imgUrl && (
             <img
               src={musicData.imgUrl}
               alt={`Album cover for ${musicData.name}`}
-              className="object-cover rounded-lg"
+              className="object-cover rounded-lg flex-shrink-0"
               loading="lazy"
-              height={"56px"}
-              width={"56px"}
+              height="56"
+              width="56"
             />
           )}
-          <div>
-            <p className="text-md">{musicData?.name || "No song selected"}</p>
-            <p className="text-sm">{musicData?.singers || ""}</p>
+          <div className="truncate">
+            <p className="text-md font-medium truncate">
+              {musicData?.name || "No song selected"}
+            </p>
+            <p className="text-sm text-gray-400 truncate">
+              {musicData?.singers || ""}
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          <button
-            onClick={handlePrev}
-            title="Previous"
-            aria-label="Previous track"
-            className="neumorphic-btn--circle "
-          >
-            <Previous size="18px" />
-          </button>
+        <div className="flex flex-1 justify-between">
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <button
+              onClick={handlePrev}
+              title="Previous"
+              aria-label="Previous track"
+              className="neumorphic-btn--circle h-10 w-10 md:h-12 md:w-12"
+            >
+              <Previous size="18px" />
+            </button>
+            <button
+              onClick={handleToggle}
+              disabled={!musicData?.file}
+              title={isPlaying ? "Pause" : "Play"}
+              aria-label={isPlaying ? "Pause playback" : "Play playback"}
+              className="neumorphic-btn--circle h-13 w-13 md:h-15 md:w-15"
+            >
+              {isPlaying ? <Pause size="20px" /> : <Play size="20px" />}
+            </button>
+            <button
+              onClick={handleNext}
+              title="Next"
+              aria-label="Next track"
+              className="neumorphic-btn--circle h-10 w-10 md:h-12 md:w-12"
+            >
+              <Next size="18px" />
+            </button>
+          </div>
 
-          <button
-            onClick={handleToggle}
-            disabled={!musicData?.file}
-            title={isPlaying ? "Pause" : "Play"}
-            aria-label={isPlaying ? "Pause playback" : "Play playback"}
-            className="neumorphic-btn--circle h-15 w-15"
-          >
-            {isPlaying ? <Pause size="24px" /> : <Play size="24px" />}
-          </button>
-
-          <button
-            onClick={handleNext}
-            title="Next"
-            aria-label="Next track"
-            className="neumorphic-btn--circle"
-          >
-            <Next size="18px" />
-          </button>
-        </div>
-
-        <div className="flex justify-center items-center gap-4">
-          <button
-            onClick={handleMuteToggle}
-            aria-label={isMuted ? "Unmute" : "Mute"}
-          >
-            {isMuted ? (
-              <NoVolume size="24px" />
-            ) : volume <= 0.5 ? (
-              <LowVolume size="24px" />
-            ) : (
-              <HighVolume size="24px" />
-            )}
-          </button>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.05"
-            value={isMuted ? 0 : volume}
-            onChange={handleVolumeChange}
-            aria-label="Volume"
-            className="neumorphic-range"
-          />
+          <div className="flex items-center justify-center gap-4 w-full md:w-auto">
+            <button
+              onClick={handleMuteToggle}
+              aria-label={isMuted ? "Unmute" : "Mute"}
+            >
+              {isMuted ? (
+                <NoVolume size="24px" />
+              ) : volume <= 0.5 ? (
+                <LowVolume size="24px" />
+              ) : (
+                <HighVolume size="24px" />
+              )}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={isMuted ? 0 : volume}
+              onChange={handleVolumeChange}
+              aria-label="Volume"
+              className="neumorphic-range max-w-[120px] md:max-w-[160px]"
+            />
+          </div>
         </div>
       </div>
     </div>

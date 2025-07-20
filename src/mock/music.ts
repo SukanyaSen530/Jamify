@@ -88,7 +88,7 @@ const data: Music[] = [
     name: "Tum Hi Ho",
     album: "Aashiqui 2",
     singers: "Arijit Singh",
-    genre: "Emotional Ballads",
+    genre: "Sentimental",
     year: 2013,
     imgUrl:
       "https://a10.gaanacdn.com/images/albums/17/92317/crop_480x480_92317.jpg",
