@@ -1,0 +1,7 @@
+{
+  "name": "Jamify",
+  "short_name": "Jam!",
+  "theme_color": "#25272a",
+  "background_color": "#25272a",
+  "display": "standalone"
+}
