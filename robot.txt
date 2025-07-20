@@ -1,9 +1,9 @@
-# robots.txt for JamiFy 🎧
+# robots.txt for Jamify 🎧
 
 User-agent: *
 Disallow:
 
-# Allow all bots to crawl everything (default)
+# Allow all bots to crawl everything
 
-Sitemap: 
-Host: 
+Sitemap: https://jamifymood.netlify.app/sitemap.xml
+Host: jamifymood.netlify.app
